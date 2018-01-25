@@ -19,7 +19,7 @@ and run it on the cluster.
 
 2.  Navigate to `~/gpu-workshop/01-gpu-hello`
 
-3.  In a file called `hello_world.cu`, type out the following program:
+3.  In the file called `hello_world.cu`, type out the following program:
 
     ```c
    	#include <stdio.h>
