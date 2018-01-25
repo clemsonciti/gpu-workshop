@@ -5,7 +5,15 @@ subtitle: CCIT CITI
 title: GPU Programming
 institute: Clemson University
 fontsize: 12pt
-...
+---
+
+# Frequently Asked Question
+
+##  How much speedup can I get from using GPUs?
+
+A: 0.001-100x
+
+---
 
 # GPUs: what are they?
 
@@ -20,8 +28,6 @@ Applications typically primarily run on the CPU, but offload compute intensive
 parts to the GPU
 
 ---
-
-# GPUs: what are they?
 
 ![How GPU acceleration works](images/how-gpu-acceleration-works.png)
 
@@ -67,3 +73,17 @@ parts to the GPU
     - Least effort, requires minimal changes to code
     - Compiler handles details of parallelism management and data movement to/from GPU
     - Uncertain performance
+
+---
+
+# GPU Hardware
+
+* NVIDIA offers special GPUs targeting HPC/scientific workloads (**Tesla**)
+    - more resources on the GPU are dedicated to floating-point operations
+
+* Example spec: **NVIDIA Tesla P100 GPU**:
+    - Number of CUDA cores: ~3500
+    - On-chip memory: 16 GB
+    - Double-precision performance: 4.7 Teraflops
+    - Single-precision performance: 9.3 Teraflops
+    - Memory bandwidth: 732 GB/s
