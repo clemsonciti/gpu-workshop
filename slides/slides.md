@@ -4,7 +4,7 @@ author:
 subtitle: CCIT CITI
 title: GPU Programming
 institute: Clemson University
-fontsize: 12pt
+fontsize: 11pt
 ---
 
 # Frequently Asked Question
@@ -18,7 +18,8 @@ A: 0.001-100x
 # GPUs: what are they?
 
 * **Computing devices**: traditionally good for graphics calculations.
-Have evolved to be more general-purpose
+Over the last decade or so have been used for general-purpose computing
+with much success
 
 * **Massively parallel processors**: 1000s of small, "weak" cores as opposed to 
 handful of fast, powerful cores (CPU)
@@ -29,16 +30,13 @@ parts to the GPU
 
 ---
 
-![How GPU acceleration works](images/how-gpu-acceleration-works.png)
-
----
-
 # Application areas using GPUs
 
 * Numerical simulation: CFD, Computational Chemistry, Computational Mechanics, Weather Sciences, etc.,
 * Artificial Intelligence and Machine Learning
 * Imaging and Computer Vision
 * Bioinformatics and Data Science
+* etc.,
 
 ---
 
@@ -87,3 +85,91 @@ parts to the GPU
     - Double-precision performance: 4.7 Teraflops
     - Single-precision performance: 9.3 Teraflops
     - Memory bandwidth: 732 GB/s
+
+---
+
+# GPUs on the Palmetto Cluster
+
+```bash
+$ qsub -I -l select=1:ncpus=2:mem=20gb:ngpus=1,\
+walltime=10:00:00 -q R2387430
+```
+
+Keep in mind the following:
+
+* The `ngpus=` option must be specified
+* Ask for *at least 2 cores*. For single core jobs, the rest of the PBS resource limits specification is ignored.
+* The special queue `R2387430` is valid only for today. After today, you will not need to specify this option.
+* You can also specify `gpu_model=k20|k40|p100` as part of
+your resource limits specification. But the workshop queue has only `k40` GPUs.
+
+---
+
+![How GPU acceleration works](images/how-gpu-acceleration-works.png)
+
+---
+
+# CUDA Hello World
+
+* CUDA C programs look very much like "normal" C programs,
+but include calls to special
+functions that execute on the GPU, called **kernels**
+
+* Kernels look very much like "normal" functions,
+but are executed in parallel by several GPU threads.
+Kernels are defined using the `__global__` specifier as shown
+below:
+
+```c
+__global__ void helloKernel() {
+    printf("Hello from the GPU!\n");
+}
+```
+
+* Calls to a CUDA kernel should specify the number of threads
+that will execute the kernel:
+
+```c
+helloKernel <<<1, 64>>> (); // Execute on 64 GPU threads
+```
+
+---
+
+# Memory management in CUDA
+
+* GPU (*device*) and CPU (*host*) have different memory spaces
+and are allocated and managed differently. CUDA provides
+`cudaMalloc` and `cuFree` for this:
+
+```c
+int *a
+int *d_a
+
+/* allocating memory on host: */
+a = (int *)malloc( size );
+
+/* allocating memory on device: */
+cudaMalloc( (void **) &d_a, size );
+
+/* freeing memory on host: */
+free(a);
+
+/* freeing memory on device: */
+cudFree(d_a);
+```
+
+# Memory management in CUDA
+
+* Data needs to be explicitly copied between CPU and GPU:
+
+```c
+/* copy data from host to device: */
+cudaMemcpy( d_a, a, size, cudaMemcpyHostToDevice );
+
+/* do the work on the device */
+
+/* copy data back from device to host: */
+cudaMemcpy( a, d_a, size, cudaMemcpyDeviceToHost );
+```
+
+
