@@ -28,15 +28,8 @@ handful of fast, powerful cores (CPU)
 Applications typically primarily run on the CPU, but offload compute intensive
 parts to the GPU
 
----
-
-# Application areas using GPUs
-
-* Numerical simulation: CFD, Computational Chemistry, Computational Mechanics, Weather Sciences, etc.,
-* Artificial Intelligence and Machine Learning
-* Imaging and Computer Vision
-* Bioinformatics and Data Science
-* etc.,
+* **Application areas**: AI/Machine Learning, Numerical Simulations (CFD, molecular dynamics, weather sciences, etc.,),
+Imaging and Computer Vision, Bioinformatics, Data Science, etc.,
 
 ---
 
@@ -111,12 +104,11 @@ your resource limits specification. But the workshop queue has only `k40` GPUs.
 
 # CUDA Hello World
 
-* CUDA C programs look very much like "normal" C programs,
+* CUDA C programs look like "normal" C programs,
 but include calls to special
 functions that execute on the GPU, called **kernels**
 
-* Kernels look very much like "normal" functions,
-but are executed in parallel by several GPU threads.
+* Kernels are executed in parallel by several GPU threads.
 Kernels are defined using the `__global__` specifier as shown
 below:
 
@@ -137,7 +129,7 @@ helloKernel <<<1, 64>>> (); // Execute on 64 GPU threads
 
 # Memory management in CUDA
 
-* GPU (*device*) and CPU (*host*) have different memory spaces
+GPU (*device*) and CPU (*host*) have different memory spaces
 and are allocated and managed differently. CUDA provides
 `cudaMalloc` and `cuFree` for this:
 
@@ -160,7 +152,7 @@ cudFree(d_a);
 
 # Memory management in CUDA
 
-* Data needs to be explicitly copied between CPU and GPU:
+Data needs to be explicitly copied between CPU and GPU:
 
 ```c
 /* copy data from host to device: */
@@ -172,4 +164,72 @@ cudaMemcpy( d_a, a, size, cudaMemcpyHostToDevice );
 cudaMemcpy( a, d_a, size, cudaMemcpyDeviceToHost );
 ```
 
+# Summing vectors: CPU v/s GPU
 
+**CPU**: Loop from 1 to `N`:
+
+```c
+void sum ( *a, *b, *c, N )
+{
+  for ( int i=0; i<N; i++ )
+  {
+    c[i] = a[i] + b[i];
+  }
+}
+```
+
+**GPU**: No loop, launched with `N` threads:
+
+```c
+__global__ void sumKernel( *d_a, *d_b, *d_c )
+{
+  int i = threadIdx.x;
+  c[i] = a[i] + b[i];
+}
+```
+
+```c
+sumKernel <<<1, N>>> (d_a, d_b, d_c);
+```
+
+# Heat conduction with a point source
+
+\begin{figure}
+\includegraphics[width=0.475\textwidth]{images/0.png}
+\hfill
+\includegraphics[width=0.475\textwidth]{images/50.png}
+
+\includegraphics[width=0.475\textwidth]{images/500.png}
+\hfill
+\includegraphics[width=0.475\textwidth]{images/5000.png}
+
+\caption{Temperature distribution at 0, 5, 50, and 500 steps}
+\end{figure}
+
+# Heat conduction with a point source: algorithm
+
+```c
+void heat_conduction_step(double *T1, double *T2) {
+    for (int i = 1; i < N - 1; i++) {
+        for (int j = 1; j < N - 1; j++) {
+            T1[i*N + j] = (
+                    T2[(i-1)*N + j] +
+                    T2[(i+1)*N + j] +
+                    T2[i*N + (j-1)] +
+                    T2[i*N + (j+1)]) / 4.0;
+        }
+    }
+	if (i == Ny / 2 && j == Nx / 2) {
+		T1[i, j] = 1.0;
+}
+
+temp = T1; T1 = T2; T2 = temp;
+```
+
+# Matrix multiplication
+
+
+
+
+
+# Matrix multiplication
