@@ -81,6 +81,15 @@ Imaging and Computer Vision, Bioinformatics, Data Science, etc.,
 
 ---
 
+# Key to good performance on GPUs
+
+* Expose as much parallelism as possible
+* Avoid copies from host to device and vice-versa
+* Leverage the GPU memory hierarchy
+* Leverage GPU libraries
+
+---
+
 # GPUs on the Palmetto Cluster
 
 ```bash
